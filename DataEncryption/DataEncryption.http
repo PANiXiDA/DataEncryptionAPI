@@ -1,0 +1,6 @@
+@DataEncryption_HostAddress = http://localhost:5132
+
+GET {{DataEncryption_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

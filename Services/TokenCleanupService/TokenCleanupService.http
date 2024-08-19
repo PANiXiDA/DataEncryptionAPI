@@ -1,0 +1,6 @@
+@TokenCleanupService_HostAddress = http://localhost:5079
+
+GET {{TokenCleanupService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
