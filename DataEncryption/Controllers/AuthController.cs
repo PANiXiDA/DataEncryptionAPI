@@ -13,9 +13,9 @@ namespace DataEncryption.Controllers
     [ApiExplorerSettings(GroupName = "Auth")]
     public class AuthController : ControllerBase
     {
-        private IUsersBL _usersBL;
-        private ITokensBL _tokensBL;
-        private JsonWebTokenEncryption _jsonWebTokenEncryption;
+        private readonly IUsersBL _usersBL;
+        private readonly ITokensBL _tokensBL;
+        private readonly JsonWebTokenEncryption _jsonWebTokenEncryption;
 
         public AuthController(IUsersBL usersBL, ITokensBL tokensBL, JsonWebTokenEncryption jsonWebTokenEncryption) 
         {

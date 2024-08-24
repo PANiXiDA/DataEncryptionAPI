@@ -9,6 +9,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Common.Configuration.Models;
+using Tools.AsymmetricEncryption;
+using Tools.Certificates;
+using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.Server.Kestrel.Https;
+using System.Net.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,10 +28,53 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("Auth", new OpenApiInfo { Title = "Auth API", Version = "v1" });
     c.SwaggerDoc("Users", new OpenApiInfo { Title = "Users API", Version = "v1" });
     c.SwaggerDoc("SymmetricEncryption", new OpenApiInfo { Title = "Symmetric Encryption API", Version = "v1" });
+    c.SwaggerDoc("AsymmetricEncryption", new OpenApiInfo { Title = "Asymmetric Encryption API", Version = "v1" });
     c.SwaggerDoc("HashEncryption", new OpenApiInfo { Title = "Hash Encryption API", Version = "v1" });
 });
 
-builder.Services.AddHttpClient();
+Certificate.Create();
+RsaEncryption.GeneratePrivateAndPublicKeys();
+
+var certificate = new X509Certificate2("certificate.pfx", "password");
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ConfigureHttpsDefaults(httpsOptions =>
+    {
+        httpsOptions.ClientCertificateMode = ClientCertificateMode.RequireCertificate;
+        httpsOptions.ClientCertificateValidation = (certificate, chain, errors) =>
+        {
+            if (errors != SslPolicyErrors.None)
+            {
+                return false;
+            }
+
+            if (chain == null)
+            {
+                return false;
+            }
+
+            foreach (var status in chain.ChainStatus)
+            {
+                if (status.Status == X509ChainStatusFlags.RevocationStatusUnknown
+                || status.Status == X509ChainStatusFlags.OfflineRevocation)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        };
+    });
+});
+
+builder.Services.AddHttpClient("Client")
+    .ConfigurePrimaryHttpMessageHandler(() =>
+    {
+        var handler = new HttpClientHandler();
+        handler.ClientCertificates.Add(certificate);
+        return handler;
+    });
 
 builder.Services.AddDataAccessLayer(configuration);
 builder.Services.AddBusinessLogicLayer();
@@ -36,6 +84,8 @@ builder.Services.Configure<SharedConfiguration>(builder.Configuration.GetSection
 builder.Services.AddSingleton<AesEncryption>();
 builder.Services.AddSingleton<HashEncryption>();
 builder.Services.AddSingleton<JsonWebTokenEncryption>();
+builder.Services.AddSingleton<RsaEncryption>();
+builder.Services.AddSingleton<EcdsaEncryption>();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -104,6 +154,7 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/Auth/swagger.json", "Auth API");
         c.SwaggerEndpoint("/swagger/Users/swagger.json", "Users API");
         c.SwaggerEndpoint("/swagger/SymmetricEncryption/swagger.json", "SymmetricEncryption API");
+        c.SwaggerEndpoint("/swagger/AsymmetricEncryption/swagger.json", "AsymmetricEncryption API");
         c.SwaggerEndpoint("/swagger/HashEncryption/swagger.json", "HashEncryption API");
     });
 }

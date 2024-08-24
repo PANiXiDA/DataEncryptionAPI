@@ -14,9 +14,9 @@ namespace DataEncryption.Controllers
     [ApiExplorerSettings(GroupName = "SymmetricEncryption")]
     public class AesController : ControllerBase
     {
-        private IUsersBL _usersBL;
-        private AesEncryption _aesEncryption;
-        private HashEncryption _hashEncryption;
+        private readonly IUsersBL _usersBL;
+        private readonly AesEncryption _aesEncryption;
+        private readonly HashEncryption _hashEncryption;
 
         public AesController(
             IUsersBL usersBL,

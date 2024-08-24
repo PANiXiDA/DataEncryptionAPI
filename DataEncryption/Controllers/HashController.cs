@@ -17,9 +17,9 @@ namespace DataEncryption.Controllers
     [ApiExplorerSettings(GroupName = "HashEncryption")]
     public class HashController : ControllerBase
     {
-        private IUsersBL _usersBL;
-        private HashEncryption _hashEncryption;
-        private string _baseUrl;
+        private readonly IUsersBL _usersBL;
+        private readonly HashEncryption _hashEncryption;
+        private readonly string _baseUrl;
         private readonly IHttpClientFactory _httpClientFactory;
 
         public HashController(
@@ -40,7 +40,7 @@ namespace DataEncryption.Controllers
         {
             try
             {
-                var httpClient = _httpClientFactory.CreateClient();
+                var httpClient = _httpClientFactory.CreateClient("Client");
 
                 var JsonWebToken = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", JsonWebToken);
