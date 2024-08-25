@@ -8,18 +8,14 @@ namespace TokenCleanupService.Data
     {
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly ILogger<TokenCleanup> _logger;
-        private readonly SharedConfiguration _sharedConfiguration;
         private ITokensBL? _tokensBL;
 
         public TokenCleanup(
             IServiceScopeFactory serviceScopeFactory,
-            ILogger<TokenCleanup> logger,
-            SharedConfiguration sharedConfiguration
-            )
+            ILogger<TokenCleanup> logger)
         {
             _serviceScopeFactory = serviceScopeFactory;
             _logger = logger;
-            _sharedConfiguration = sharedConfiguration;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -51,7 +47,7 @@ namespace TokenCleanupService.Data
                     }
                 }
 
-                await Task.Delay(TimeSpan.FromHours(_sharedConfiguration.CleanupIntervalHours!.Value), stoppingToken);
+                await Task.Delay(TimeSpan.FromHours(SharedConfiguration.CleanupIntervalHours!.Value), stoppingToken);
             }
 
             _logger.LogInformation("Token Cleanup Service is stopping.");

@@ -1,25 +1,40 @@
-﻿using System.Security.Cryptography;
+﻿using Common.Configuration;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Tools.Certificates
 {
     public class Certificate
     {
-        public static void Create()
+        private readonly string _certificatePath;
+        private readonly string _certificatePassword;
+        private readonly string _domain;
+        private readonly string _typeEncryption;
+        private readonly string _publicKeyPath;
+        private readonly string _privateKeyPath;
+
+        public Certificate(SharedConfiguration sharedConfiguration)
         {
-            if (!File.Exists("certificate.pfx"))
-            {
-                using (var rsa = RSA.Create(2048))
-                {
-                    var request = new CertificateRequest("cn=localhost", rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+            _certificatePath = sharedConfiguration.CertificateConfiguration.Path;
+            _certificatePassword = sharedConfiguration.CertificateConfiguration.Password;
+            _domain = sharedConfiguration.CertificateConfiguration.Domain;
+            _typeEncryption = sharedConfiguration.CertificateConfiguration.TypeEncryption;
+            _publicKeyPath = sharedConfiguration.CertificateConfiguration.PublicKeyPath;
+            _privateKeyPath = sharedConfiguration.CertificateConfiguration.PrivateKeyPath;
+        }
 
-                    var certificate = request.CreateSelfSigned(DateTimeOffset.UtcNow, DateTimeOffset.UtcNow.AddYears(1));
+        public X509Certificate2 Create()
+        {
+            var factory = new CertificateFactory(_typeEncryption);
+            var generator = factory.GetCertificateGenerator();
 
-                    var certData = certificate.Export(X509ContentType.Pfx, "password");
+            var certificate = generator.CreateCertificate(
+                _domain,
+                _certificatePassword,
+                _certificatePath,
+                _publicKeyPath,
+                _privateKeyPath);
 
-                    File.WriteAllBytes("certificate.pfx", certData);
-                }
-            }
+            return certificate;
         }
     }
 }

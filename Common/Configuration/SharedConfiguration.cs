@@ -9,10 +9,10 @@ namespace Common.Configuration
         public AesEncryptionConfiguration AesEncryptionConfiguration { get; set; } = new AesEncryptionConfiguration();
         public JsonWebTokenConfiguration JsonWebTokenConfiguration { get; set; } = new JsonWebTokenConfiguration();
         public RsaEncryptionConfiguration RsaEncryptionConfiguration { get; set; } = new RsaEncryptionConfiguration();
-        public EcdsaEncryptionConfiguration EcdsaEncryptionConfiguration { get; set; } = new EcdsaEncryptionConfiguration();
-        public int? CleanupIntervalHours { get; set; }
+        public static int? CleanupIntervalHours { get; set; }
+        public CertificateConfiguration CertificateConfiguration { get; set; } = new CertificateConfiguration();
 
-        public void UpdateSharedConfiguration(int? cleanupIntervalHours)
+        public static void UpdateSharedConfiguration(int? cleanupIntervalHours = null)
         {
             CleanupIntervalHours = cleanupIntervalHours;
         }

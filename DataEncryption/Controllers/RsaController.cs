@@ -7,15 +7,13 @@ namespace DataEncryption.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [ApiExplorerSettings(GroupName = "AsymmetricEncryption")]
-    public class AsymmetricEncryptionController : ControllerBase
+    public class RsaController : ControllerBase
     {
         private readonly RsaEncryption _rsaEncryption;
-        private readonly EcdsaEncryption _ecdsaEncryption;
 
-        public AsymmetricEncryptionController(RsaEncryption rsaEncryption, EcdsaEncryption ecdsaEncryption)
+        public RsaController(RsaEncryption rsaEncryption)
         {
             _rsaEncryption = rsaEncryption;
-            _ecdsaEncryption = ecdsaEncryption;
         }
 
         [HttpPost("RsaEncryptData")]
@@ -44,13 +42,6 @@ namespace DataEncryption.Controllers
             {
                 return BadRequest(ex.Message);
             }
-        }
-
-        [HttpPost("EcdsaSignatureData")]
-        public IActionResult EcdsaSignatureData([FromBody] UserModel user)
-        {
-            //_ecdsaEncryption.GenerateKeys();
-            return Ok(user);
         }
     }
 }

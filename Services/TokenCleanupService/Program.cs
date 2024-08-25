@@ -11,12 +11,7 @@ builder.Services.AddDataAccessLayer(configuration);
 builder.Services.AddBusinessLogicLayer();
 
 var cleanupIntervalHours = configuration.GetValue<int?>("CleanupIntervalHours");
-builder.Services.AddSingleton(provider =>
-{
-    var sharedConfig = new SharedConfiguration();
-    sharedConfig.UpdateSharedConfiguration(cleanupIntervalHours);
-    return sharedConfig;
-});
+SharedConfiguration.UpdateSharedConfiguration(cleanupIntervalHours: cleanupIntervalHours);
 
 builder.Services.AddHostedService<TokenCleanup>();
 

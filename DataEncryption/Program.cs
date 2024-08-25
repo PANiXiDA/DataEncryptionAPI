@@ -14,6 +14,7 @@ using Tools.Certificates;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
 using System.Net.Security;
+using System.Security.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,10 +33,21 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("HashEncryption", new OpenApiInfo { Title = "Hash Encryption API", Version = "v1" });
 });
 
-Certificate.Create();
 RsaEncryption.GeneratePrivateAndPublicKeys();
 
-var certificate = new X509Certificate2("certificate.pfx", "password");
+builder.Services.AddDataAccessLayer(configuration);
+builder.Services.AddBusinessLogicLayer();
+
+builder.Services.Configure<SharedConfiguration>(builder.Configuration.GetSection("SharedConfiguration"));
+
+builder.Services.AddSingleton<AesEncryption>();
+builder.Services.AddSingleton<HashEncryption>();
+builder.Services.AddSingleton<JsonWebTokenEncryption>();
+builder.Services.AddSingleton<RsaEncryption>();
+builder.Services.AddSingleton<EcdsaEncryption>();
+
+var sharedConfiguration = builder.Configuration.GetSection("SharedConfiguration").Get<SharedConfiguration>() ?? throw new ArgumentNullException("Shared configuration is not found");
+var certificate = new Certificate(sharedConfiguration).Create();
 
 builder.WebHost.ConfigureKestrel(options =>
 {
@@ -71,21 +83,13 @@ builder.WebHost.ConfigureKestrel(options =>
 builder.Services.AddHttpClient("Client")
     .ConfigurePrimaryHttpMessageHandler(() =>
     {
-        var handler = new HttpClientHandler();
-        handler.ClientCertificates.Add(certificate);
+        var handler = new HttpClientHandler
+        {
+            ClientCertificates = { certificate },
+            SslProtocols = SslProtocols.Tls12
+        };
         return handler;
     });
-
-builder.Services.AddDataAccessLayer(configuration);
-builder.Services.AddBusinessLogicLayer();
-
-builder.Services.Configure<SharedConfiguration>(builder.Configuration.GetSection("SharedConfiguration"));
-
-builder.Services.AddSingleton<AesEncryption>();
-builder.Services.AddSingleton<HashEncryption>();
-builder.Services.AddSingleton<JsonWebTokenEncryption>();
-builder.Services.AddSingleton<RsaEncryption>();
-builder.Services.AddSingleton<EcdsaEncryption>();
 
 builder.Services.AddAuthentication(options =>
 {
