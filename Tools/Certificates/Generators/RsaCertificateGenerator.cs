@@ -26,6 +26,13 @@ namespace Tools.Certificates.Generators
                 var certificate = request.CreateSelfSigned(DateTimeOffset.UtcNow, DateTimeOffset.UtcNow.AddYears(1));
 
                 File.WriteAllBytes(path, certificate.Export(X509ContentType.Pfx, password));
+
+                var publicKeyPem = rsa.ExportRSAPublicKeyPem();
+                File.WriteAllText(publicKeyPath, publicKeyPem);
+
+                var privateKeyPem = rsa.ExportRSAPrivateKeyPem();
+                File.WriteAllText(privateKeyPath, privateKeyPem);
+
                 return certificate;
             }
         }
