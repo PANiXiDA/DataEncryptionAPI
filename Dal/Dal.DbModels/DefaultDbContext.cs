@@ -10,6 +10,7 @@ namespace Dal.DbModels
 
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Token> Tokens { get; set; }
+        public virtual DbSet<Xuy> Xuys { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -26,6 +27,11 @@ namespace Dal.DbModels
                 entity.Property(e => e.Password).IsRequired();
 
                 entity.Property(e => e.RegistrationDate).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<Xuy>(entity =>
+            {
+                entity.Property(e => e.Name).IsRequired();
             });
 
             OnModelCreatingPartial(modelBuilder);

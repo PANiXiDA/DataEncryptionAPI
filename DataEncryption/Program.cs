@@ -31,6 +31,7 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("SymmetricEncryption", new OpenApiInfo { Title = "Symmetric Encryption API", Version = "v1" });
     c.SwaggerDoc("AsymmetricEncryption", new OpenApiInfo { Title = "Asymmetric Encryption API", Version = "v1" });
     c.SwaggerDoc("HashEncryption", new OpenApiInfo { Title = "Hash Encryption API", Version = "v1" });
+    c.SwaggerDoc("Xuys", new OpenApiInfo { Title = "Xuy API", Version = "v1" });
 });
 
 RsaEncryption.GeneratePrivateAndPublicKeys();
@@ -127,7 +128,7 @@ builder.Services.AddSwaggerGen(c =>
         Scheme = "Bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Введите токен JWT для авторизации"
+        Description = "Г‚ГўГҐГ¤ГЁГІГҐ ГІГ®ГЄГҐГ­ JWT Г¤Г«Гї Г ГўГІГ®Г°ГЁГ§Г Г¶ГЁГЁ"
     });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -160,6 +161,7 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/SymmetricEncryption/swagger.json", "SymmetricEncryption API");
         c.SwaggerEndpoint("/swagger/AsymmetricEncryption/swagger.json", "AsymmetricEncryption API");
         c.SwaggerEndpoint("/swagger/HashEncryption/swagger.json", "HashEncryption API");
+        c.SwaggerEndpoint("/swagger/Xuys/swagger.json", "Xuy API");
     });
 }
 else
