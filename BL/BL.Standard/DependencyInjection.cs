@@ -10,6 +10,7 @@ namespace BL.Standard
         {
             services.AddScoped<IUsersBL, UsersBL>();
             services.AddScoped<ITokensBL, TokensBL>();
+            services.AddScoped<IXuysBL, XuysBL>();
 
             return services;
         }

@@ -13,6 +13,7 @@ namespace Dal.SQL
             services.AddDbContext<DefaultDbContext>(config => config.UseNpgsql(configuration["ConnectionStrings:DefaultConnectionString"]));
             services.AddScoped<IUsersDal, UsersDal>();
             services.AddScoped<ITokensDal, TokensDal>();
+            services.AddScoped<IXuysDal, XuysDal>();
 
             return services;
         }
